@@ -1,0 +1,27 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+.DS_Store
+Thumbs.db
+*.log
+*.tsbuildinfo
+*.sqlite
+*.tgz
+*.map
+coverage/
+.next/
+.nuxt/
+.svelte-kit/
+.vscode/
+.idea/
+.vs/
+.npm
+.eslintcache
+.cache
+
+# Local Codex/assistant context
+AGENTS.md
+.agents/
+.codex/
