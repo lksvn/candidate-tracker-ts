@@ -5,7 +5,7 @@ import { Interview } from '../domain/interview';
 import { JobOpportunity } from '../domain/jobOpportunity';
 import { Project } from '../domain/project';
 import * as Seed from './seed';
-import { AsyncResult, failureResult, successResult } from '../shared/result';
+import { AsyncResult, successResult } from '../shared/result';
 
 export async function fetchCompanies(): Promise<AsyncResult<Company[]>> {
     return successResult(Seed.companies);
@@ -16,9 +16,6 @@ export async function fetchClients(): Promise<AsyncResult<Client[]>> {
 }
 
 export async function fetchJobOpportunities(): Promise<AsyncResult<JobOpportunity[]>> {
-    if (Seed.jobs.length === 0) {
-        return failureResult('No job opportunities found');
-    }
     return successResult(Seed.jobs);
 }
 
