@@ -3,3 +3,13 @@ export interface Company {
     name: string;
     website: string | null;
 }
+
+export type CreateCompanyInput = {
+    name: string;
+    website?: string | null;
+};
+
+export type UpdateCompanyInput = {
+    name?: string;
+    website?: string | null;
+};

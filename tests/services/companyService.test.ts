@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Company } from "../../src/domain/company";
-import type { CreateCompanyInput, UpdateCompanyInput } from "../../src/services/companyService";
+import type { Company, CreateCompanyInput, UpdateCompanyInput } from "../../src/domain/company";
 import { createCompany, getCompanyById, updateCompany } from "../../src/services/companyService";
 
 const companies: Company[] = [

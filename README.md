@@ -84,7 +84,7 @@ Promise<Result<T, RepositoryError>>
 
 Contains storage-independent repository contracts required by the application.
 
-The first contract, `CompanyRepository`, is implemented by both in-memory and Prisma/PostgreSQL adapters without changing its callers.
+The first contract, `CompanyRepository`, is implemented by both in-memory and Prisma/PostgreSQL adapters without changing its callers. Both adapters support listing, lookup, creation, and partial updates with consistent missing-record and nullable-field behavior.
 
 ### `data/validation/`
 
@@ -230,11 +230,12 @@ Prisma Studio requires the PostgreSQL container to be running and uses `DATABASE
 
 ## Next Step
 
-Complete the Prisma-backed `CompanyRepository` write operations and connect the repository to an application use case.
+Connect `CompanyRepository` to an application use case that validates input and coordinates persistence.
 
 Recommended targets:
 
-- define repository create and update contracts
-- persist a new company through Prisma
-- update a persisted company through Prisma
-- cover successful and failure outcomes with integration tests
+- define Company business validation separately from runtime shape validation
+- create an application service that depends on `CompanyRepository`
+- validate input before calling repository write operations
+- test the use case with the in-memory adapter
+- revisit the existing pure `createCompany` helper once the persisted flow is established
