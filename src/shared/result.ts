@@ -1,25 +1,31 @@
-export type AsyncResult<T> = 
+export type Result<T, E> =
     | { success: true; data: T } 
-    | { success: false; error: string };
+    | { success: false; error: E };
 
-export function successResult<T>(data: T): AsyncResult<T> {
+// Why never?
+// Means a success contains no errors and a failure contains no data. No need for a unused parameter
+export function successResult<T>(
+    data: T
+): Result<T, never> {
     return {
         success: true,
         data
     };
 }
 
-export function failureResult<T>(error: string): AsyncResult<T> {
+export function failureResult<E>(
+    error: E
+): Result<never, E> {
     return {
         success: false,
         error
     };
 }
 
-export function handleResult<T>(
-    result: AsyncResult<T>,
+export function handleResult<T, E>(
+    result: Result<T, E>,
     onSuccess: (data: T) => void,
-    onFailure: (error: string) => void
+    onFailure: (error: E) => void
 ): void {
     if (result.success) {
         onSuccess(result.data);

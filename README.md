@@ -1,30 +1,42 @@
 # Candidate Tracker - TypeScript Lab
 
-This folder contains the TypeScript-only phase of the Candidate Tracker learning project.
+This folder contains the TypeScript and backend-foundation phases of the Candidate Tracker learning project.
 
-The goal is to practice TypeScript, domain modeling, service boundaries, validation, generics, utility types, and async data flow before adding React or a real database.
+The goal is to practice TypeScript, domain modeling, service boundaries, validation, generics, utility types, async data flow, and persistence foundations before adding React.
 
 ## Current Focus
 
 - Model trusted domain objects with TypeScript types and interfaces.
 - Keep business behavior in service functions.
 - Validate business rules separately from TypeScript shape checks.
-- Use repositories to simulate async data access.
+- Define repository contracts independently from their storage implementations.
+- Implement the same repository contract with in-memory and Prisma/PostgreSQL adapters.
 - Use automated tests to protect helper, validation, and service behavior.
-- Prepare the codebase for async repository tests and, later, database-backed repositories.
+- Validate unknown data at application boundaries before treating it as domain data.
+- Keep fast unit tests separate from database integration tests.
 
 ## Folder Structure
 
 ```txt
 src/
 +-- data/
++   +-- database/
++   +-- repositories/
++   +-- validation/
 +-- domain/
++-- repositories/
 +-- services/
 +-- shared/
 +-- index.ts
 tests/
++-- data/
++-- integration/
 +-- services/
 +-- shared/
+prisma/
++-- migrations/
++-- schema.prisma
+compose.yaml
 ```
 
 ## Folders
@@ -58,15 +70,25 @@ Services should not care where data comes from.
 
 ### `data/`
 
-Contains seed data and repository-like functions.
+Contains seed data, database configuration, concrete repository implementations, and runtime shape validators.
 
-The repositories currently return seed data, but they are shaped like async data access:
+Repository operations return explicit success or failure values:
 
 ```ts
-Promise<AsyncResult<T>>
+Promise<Result<T, RepositoryError>>
 ```
 
-This prepares the project for future database-backed implementations.
+`CompanyRepository` currently has both in-memory and Prisma/PostgreSQL implementations.
+
+### `repositories/`
+
+Contains storage-independent repository contracts required by the application.
+
+The first contract, `CompanyRepository`, is implemented by both in-memory and Prisma/PostgreSQL adapters without changing its callers.
+
+### `data/validation/`
+
+Contains type guards for untrusted runtime input. These validators check data shape and field types; business-value rules remain in service validation.
 
 ### `shared/`
 
@@ -76,7 +98,7 @@ Examples:
 
 - `findById`
 - `filterByProperty`
-- `AsyncResult`
+- `Result`
 - `successResult`
 - `failureResult`
 - `handleResult`
@@ -98,13 +120,17 @@ It is intentionally not production-clean yet.
 ## Important Concepts Practiced
 
 - Automated tests with Vitest.
+- Repository contracts and in-memory adapters.
+- Runtime type guards for `unknown` input.
 - Union types for controlled status values.
 - Interfaces for domain objects.
 - `Omit` for create input types.
 - `Partial` for update input types.
 - Generics for reusable helpers.
 - `Promise<T>` and `await`.
-- `AsyncResult<T>` for typed success/failure flows.
+- `Result<T, E>` for typed success/failure flows.
+- Prisma schema modeling and migrations.
+- PostgreSQL integration tests with isolated test data cleanup.
 - `Promise.all` for independent async data loading.
 - Staged async loading when later data depends on earlier data.
 
@@ -134,13 +160,81 @@ Run tests:
 npm run test -- --run
 ```
 
+Run PostgreSQL integration tests:
+
+```bash
+npm run test:integration
+```
+
+## Local PostgreSQL
+
+The development database runs in Docker using `compose.yaml`. Copy the example connection configuration once:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Start PostgreSQL:
+
+```bash
+docker compose up -d database
+```
+
+Check container health:
+
+```bash
+docker compose ps
+```
+
+Stop the container without deleting its stored data:
+
+```bash
+docker compose stop database
+```
+
+The named Docker volume preserves database files between container restarts. The credentials in `.env.example` are intended only for local development; `.env` is ignored by Git.
+
+## Prisma Commands
+
+Validate the Prisma schema and configuration:
+
+```bash
+npx prisma validate
+```
+
+Format `schema.prisma`:
+
+```bash
+npx prisma format
+```
+
+Create and apply a development migration:
+
+```bash
+npx prisma migrate dev --name <migration-name>
+```
+
+Regenerate Prisma Client after schema changes:
+
+```bash
+npx prisma generate
+```
+
+Open Prisma Studio to inspect and edit local database records:
+
+```bash
+npx prisma studio
+```
+
+Prisma Studio requires the PostgreSQL container to be running and uses `DATABASE_URL` from `.env`.
+
 ## Next Step
 
-Add tests for async repository behavior before moving to a database.
+Complete the Prisma-backed `CompanyRepository` write operations and connect the repository to an application use case.
 
 Recommended targets:
 
-- repository functions returning `AsyncResult<T>`
-- dashboard data loading
-- success and failure branches
-- dependent async loading
+- define repository create and update contracts
+- persist a new company through Prisma
+- update a persisted company through Prisma
+- cover successful and failure outcomes with integration tests

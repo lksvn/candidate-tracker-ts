@@ -16,7 +16,7 @@ export function isCompany(input: unknown): input is Company {
         return false;
     }
 
-    if (item.website !== undefined && typeof item.website !== 'string') {
+    if (item.website !== null && typeof item.website !== 'string') {
         return false;
     }
 

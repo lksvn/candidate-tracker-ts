@@ -5,7 +5,8 @@ import { InMemoryCompanyRepository } from '../../../src/data/repositories/inMemo
 const companies: Company[] = [
     {
         id: 'company-1',
-        name: 'TechFlow Solutions'
+        name: 'TechFlow Solutions',
+        website: null
     },
     {
         id: 'company-2',
@@ -56,7 +57,11 @@ describe('InMemoryCompanyRepository', () => {
         const repository = new InMemoryCompanyRepository(companies);
 
         const firstResult = await repository.findAll();
-        const newItem: Company = { id: 'company-3', name: 'Company Test' };
+        const newItem: Company = {
+            id: 'company-3',
+            name: 'Company Test',
+            website: null
+        };
 
         if (firstResult.success) {
             firstResult.data.push(newItem);

@@ -1,17 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { Company } from "../../src/domain/company";
+import type { Company } from "../../src/domain/company";
+import type { CreateCompanyInput, UpdateCompanyInput } from "../../src/services/companyService";
 import { createCompany, getCompanyById, updateCompany } from "../../src/services/companyService";
 
 const companies: Company[] = [
-    { id: '1', name: 'TechFlow Solutions' },
-    { id: '2', name: 'Nexus Digital' },
-    { id: '3', name: 'Stellar Labs' }
+    { id: '1', name: 'TechFlow Solutions', website: null },
+    { id: '2', name: 'Nexus Digital', website: null },
+    { id: '3', name: 'Stellar Labs', website: null }
 ];
 
 describe('getCompanyById', () => {
     it('returns the selected company', () => {
         expect(getCompanyById(companies, '1')).toEqual(
-            { id: '1', name: 'TechFlow Solutions' }
+            { id: '1', name: 'TechFlow Solutions', website: null }
         );
     });
 
@@ -22,7 +23,7 @@ describe('getCompanyById', () => {
 
 describe('createCompany', () => {
     it('creates a company with the provided id', () => {
-        const input: Omit<Company, 'id'> = {
+        const input: CreateCompanyInput = {
             name: 'New Company',
             website: 'https://google.com'
         };
@@ -33,11 +34,21 @@ describe('createCompany', () => {
             website: 'https://google.com'
         });
     });
+
+    it('normalizes an omitted website to null', () => {
+        expect(createCompany('new-company-2', {
+            name: 'Company Without Website'
+        })).toEqual({
+            id: 'new-company-2',
+            name: 'Company Without Website',
+            website: null
+        });
+    });
 });
 
 describe('updateCompany', () => {
     it('updates only the provided company fields', () => {
-        const input: Partial<Omit<Company, 'id'>> = {
+        const input: UpdateCompanyInput = {
             website: 'https://yahoo.com'
         };
 
@@ -45,6 +56,20 @@ describe('updateCompany', () => {
             id: '1',
             name: 'TechFlow Solutions',
             website: 'https://yahoo.com'
+        });
+    });
+
+    it('clears the website when null is provided', () => {
+        const company: Company = {
+            id: '1',
+            name: 'TechFlow Solutions',
+            website: 'https://techflow.example.com'
+        };
+
+        expect(updateCompany(company, { website: null })).toEqual({
+            id: '1',
+            name: 'TechFlow Solutions',
+            website: null
         });
     });
 });

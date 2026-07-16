@@ -1,8 +1,15 @@
-import { Company } from "../domain/company";
+import type { Company } from "../domain/company";
 import { findById } from "../shared/collectionUtils";
 
-type CreateCompanyInput = Omit<Company, 'id'>;
-type UpdateCompanyInput = Partial<Omit<Company, 'id'>>;
+export type CreateCompanyInput = {
+    name: string;
+    website?: string | null;
+};
+
+export type UpdateCompanyInput = {
+    name?: string;
+    website?: string | null;
+};
 
 export function getCompanies(companies: Company[]): Company[] {
     return companies;
@@ -15,7 +22,8 @@ export function getCompanyById(companies: Company[], id: string): Company | unde
 export function createCompany(id: string, input: CreateCompanyInput): Company {
     return {
         id,
-        ...input
+        name: input.name,
+        website: input.website ?? null
     };
 }
 

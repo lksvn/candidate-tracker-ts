@@ -4,7 +4,8 @@ import { FreelanceOpportunity } from '../domain/freelance';
 import { Interview } from '../domain/interview';
 import { JobOpportunity } from '../domain/jobOpportunity';
 import { Project } from '../domain/project';
-import { AsyncResult, failureResult, successResult } from '../shared/result';
+import type { Result } from '../shared/result';
+import { failureResult, successResult } from '../shared/result';
 import {
     fetchClients,
     fetchCompanies,
@@ -23,7 +24,7 @@ type CandidateTrackerDashboardData = {
     projects: Project[];
 };
 
-export async function fetchCandidateTrackerDashboardData(): Promise<AsyncResult<CandidateTrackerDashboardData>> {
+export async function fetchCandidateTrackerDashboardData(): Promise<Result<CandidateTrackerDashboardData, never>> {
     const [
         companiesResult,
         clientsResult,

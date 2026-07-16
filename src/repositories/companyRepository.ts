@@ -1,8 +1,11 @@
 import type { Company } from '../domain/company';
-import type { AsyncResult } from '../shared/result';
+import type { Result } from '../shared/result';
+import type { RepositoryError } from './repositoryError';
 
 export interface CompanyRepository {
-    findAll(): Promise<AsyncResult<Company[]>>;
+    findAll(): Promise<Result<Company[], RepositoryError>>;
 
-    findById(id: string): Promise<AsyncResult<Company | undefined>>;
+    findById(
+        id: string
+    ): Promise<Result<Company | undefined, RepositoryError>>;
 }
