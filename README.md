@@ -230,12 +230,11 @@ Prisma Studio requires the PostgreSQL container to be running and uses `DATABASE
 
 ## Next Step
 
-Complete the Company application layer and connect runtime input validation to the persisted use cases.
+Connect the completed Company write application layer to a real external-input boundary.
 
 Recommended targets:
 
-- add Company update validation and application-service orchestration
-- translate a missing update target into an application-level outcome
 - validate unknown create/update input before it reaches typed use cases
+- map application outcomes to boundary responses without leaking repository details
 - revisit the existing pure create/update helpers now that persisted use cases exist
 - expand the relational schema after the Company vertical slice is complete
