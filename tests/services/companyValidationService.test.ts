@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { validateCreateCompanyInput } from "../../src/services/companyValidationService";
-import type { CreateCompanyInput } from "../../src/domain/company";
+import { validateCreateCompanyInput, validateUpdateCompanyInput } from "../../src/services/companyValidationService";
+import type { CreateCompanyInput, UpdateCompanyInput } from "../../src/domain/company";
 
 describe('validateCreateCompanyInput', () => {
     it('returns an issue when the company name is empty', () => {
@@ -147,5 +147,119 @@ describe('validateCreateCompanyInput', () => {
                 reason: 'invalid-url'
             }
         ]);
+    });
+});
+
+describe('validateUpdateCompanyInput', () => {
+    it('returns no issues when no fields are sent', () => {
+        expect(validateUpdateCompanyInput({})).toEqual([]);
+    });
+
+    it('returns an issue when the company name is empty', () => {
+        const company: UpdateCompanyInput = {
+            name: ''
+        };
+        
+        expect(validateUpdateCompanyInput(company)).toEqual([ 
+            {
+                field: 'name',
+                reason: 'blank-name'
+            } 
+        ]);
+    });
+
+    it('returns an issue when the company name is only spaces', () => {
+        const company: UpdateCompanyInput = {
+            name: '    '
+        };
+        
+        expect(validateUpdateCompanyInput(company)).toEqual([ 
+            {
+                field: 'name',
+                reason: 'blank-name'
+            } 
+        ]);
+    });
+
+    it('returns no issues when the company name is valid', () => {
+        const company: UpdateCompanyInput = {
+            name: 'Acme'
+        };
+        
+        expect(validateUpdateCompanyInput(company)).toEqual([]);
+    });
+
+    it('returns an issue when the company website is a unsupported protocol', () => {
+        const company: UpdateCompanyInput = {
+            website: 'ftp://invalid.com'
+        };
+        
+        expect(validateUpdateCompanyInput(company)).toEqual([
+            {
+                field: 'website',
+                reason: 'invalid-url'
+            }
+        ]);
+    });
+
+    it('returns an issue when the company website dont start with a explicit http prefix', () => {
+        const company: UpdateCompanyInput = {
+            website: 'http:invalid.com'
+        };
+        
+        expect(validateUpdateCompanyInput(company)).toEqual([
+            {
+                field: 'website',
+                reason: 'invalid-url'
+            }
+        ]);
+    });
+
+    it('returns an issue when the company website is empty', () => {
+        const company: UpdateCompanyInput = {
+            website: ''
+        };
+        
+        expect(validateUpdateCompanyInput(company)).toEqual([
+            {
+                field: 'website',
+                reason: 'invalid-url'
+            }
+        ]);
+    });
+
+    it('returns no issue when the company website is undefined', () => {
+        const company: UpdateCompanyInput = {
+            name: 'Company Test',
+            website: undefined
+        };
+        
+        expect(validateUpdateCompanyInput(company)).toEqual([]);
+    });
+
+    it('returns no issue when the company website is null', () => {
+        const company: UpdateCompanyInput = {
+            name: 'Company Test',
+            website: null
+        };
+        
+        expect(validateUpdateCompanyInput(company)).toEqual([]);
+    });
+
+    it('returns no issues when the company website is valid', () => {
+        const company: UpdateCompanyInput = {
+            website: 'http://website.com'
+        };
+        
+        expect(validateUpdateCompanyInput(company)).toEqual([]);
+    });
+
+    it('returns no issues when all fields are valid', () => {
+        const company: UpdateCompanyInput = {
+            name: 'Company Test',
+            website: 'http://valid-url.com'
+        };
+        
+        expect(validateUpdateCompanyInput(company)).toEqual([]);
     });
 });

@@ -1,4 +1,4 @@
-import type { CreateCompanyInput } from "../domain/company";
+import type { CreateCompanyInput, UpdateCompanyInput } from "../domain/company";
 
 export type CompanyValidationIssue = {
     field: 'name' | 'website';
@@ -32,6 +32,29 @@ export function validateCreateCompanyInput(
         issues.push({ field: 'name', reason: 'blank-name' });
     }
     
+    if (
+        input.website !== undefined && 
+        input.website !== null &&
+        !isHttpUrl(input.website)
+    ) {
+        issues.push({ field: 'website', reason: 'invalid-url' });
+    }
+
+    return issues;
+}
+
+export function validateUpdateCompanyInput(
+    input: UpdateCompanyInput
+): CompanyValidationIssue[] {
+    const issues: CompanyValidationIssue[] = [];
+
+    if (
+        input.name !== undefined && 
+        input.name.trim() === ''
+    ) {
+        issues.push({ field: 'name', reason: 'blank-name' });
+    }
+
     if (
         input.website !== undefined && 
         input.website !== null &&
