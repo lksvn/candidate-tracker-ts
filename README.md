@@ -230,11 +230,12 @@ Prisma Studio requires the PostgreSQL container to be running and uses `DATABASE
 
 ## Next Step
 
-Connect the completed Company write application layer to a real external-input boundary.
+Build the first Job Opportunity web vertical slice and connect it relationally to Company.
 
 Recommended targets:
 
-- validate unknown create/update input before it reaches typed use cases
-- map application outcomes to boundary responses without leaking repository details
-- revisit the existing pure create/update helpers now that persisted use cases exist
-- expand the relational schema after the Company vertical slice is complete
+- define the minimal persisted Job Opportunity fields and Company relationship
+- add and inspect the Prisma migration before expanding application code
+- render persisted opportunities through a Server Component
+- add one create workflow through a Server Action
+- keep styling minimal and functional while product behavior is still growing
