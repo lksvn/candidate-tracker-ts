@@ -2,6 +2,7 @@ import { connection } from 'next/server';
 import { prisma } from '../../data/database/prismaClient';
 import { PrismaCompanyRepository } from '../../data/repositories/prismaCompanyRepository';
 import { CompanyForm } from './company-form';
+import Link from 'next/link';
 
 const companyRepository = new PrismaCompanyRepository(prisma);
 
@@ -29,7 +30,9 @@ export default async function CompaniesPage() {
                 <ul>
                     {result.data.map((company) => (
                         <li key={company.id}>
-                            <strong>{company.name}</strong>
+                            <Link href={`/companies/${company.id}`}>
+                                <strong>{company.name}</strong>
+                            </Link>
 
                             {company.website && (
                                 <>
