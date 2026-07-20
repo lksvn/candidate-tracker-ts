@@ -22,7 +22,7 @@ export default async function CompanyPage({
             <main>
                 <h1>Company</h1>
                 <p>Could not load the company.</p>
-                <Link href="/companies">Back to companies</Link>
+                <Link href="/companies">{'<'} Back to companies</Link>
             </main>
         );
     }
@@ -35,10 +35,12 @@ export default async function CompanyPage({
 
     return (
         <main>
-            <Link href="/companies">Back to companies</Link>
+            <Link href="/companies">{'<'} Back to companies</Link>
 
             <h1>{company.name}</h1>
-
+            <Link href={`/companies/${company.id}/edit`}>
+                Edit company
+            </Link>
             {company.website ? (
                 <p>
                     <a href={company.website}>

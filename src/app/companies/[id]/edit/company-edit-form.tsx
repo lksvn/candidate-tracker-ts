@@ -1,16 +1,28 @@
 'use client';
 
 import { useActionState } from 'react';
-import { createCompanyAction, type CompanyActionState } from './actions';
+import type { Company } from '../../../../domain/company';
+import { updateCompanyAction, type CompanyActionState } from '../../actions';
 
 const initialState: CompanyActionState = {
     status: 'idle',
     message: ''
 };
 
-export function CompanyForm() {
+type CompanyEditFormProps = {
+    company: Company;
+};
+
+export function CompanyEditForm({
+    company
+}: CompanyEditFormProps) {
+    const updateCompanyWithId = updateCompanyAction.bind(
+        null,
+        company.id
+    );
+
     const [state, formAction, pending] = useActionState(
-        createCompanyAction,
+        updateCompanyWithId,
         initialState
     );
 
@@ -22,6 +34,7 @@ export function CompanyForm() {
                     id="name"
                     name="name"
                     type="text"
+                    defaultValue={company.name}
                     required
                 />
             </div>
@@ -32,12 +45,13 @@ export function CompanyForm() {
                     id="website"
                     name="website"
                     type="url"
+                    defaultValue={company.website ?? ''}
                     placeholder="https://example.com"
                 />
             </div>
 
             <button type="submit" disabled={pending}>
-                {pending ? 'Creating...' : 'Create company'}
+                {pending ? 'Saving...' : 'Save changes'}
             </button>
 
             {state.message && (

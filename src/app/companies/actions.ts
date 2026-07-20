@@ -5,8 +5,9 @@ import { prisma } from '../../data/database/prismaClient';
 import { PrismaCompanyRepository } from '../../data/repositories/prismaCompanyRepository';
 import { isCreateCompanyInput } from '../../data/validation/companyShapeValidator';
 import { CompanyApplicationService } from '../../services/companyApplicationService';
+import { redirect } from 'next/navigation';
 
-export type CreateCompanyActionState = {
+export type CompanyActionState = {
     status: 'idle' | 'error' | 'success';
     message: string;
 };
@@ -17,9 +18,9 @@ const repository = new PrismaCompanyRepository(prisma);
 const service = new CompanyApplicationService(repository);
 
 export async function createCompanyAction(
-    _previousState: CreateCompanyActionState,
+    _previousState: CompanyActionState,
     formData: FormData
-): Promise<CreateCompanyActionState> {
+): Promise<CompanyActionState> {
     const website = formData.get('website');
 
     // FormData is an external runtime boundary: values may be strings, files,
@@ -58,4 +59,54 @@ export async function createCompanyAction(
         status: 'success',
         message: 'Company created.'
     };
+}
+
+export async function updateCompanyAction(
+    id: string,
+    _previousState: CompanyActionState,
+    formData: FormData
+): Promise<CompanyActionState> {
+    const website = formData.get('website');
+
+    const input: unknown = {
+        name: formData.get('name'),
+        website: website === '' ? null : website
+    };
+
+    // This UI submits the complete editable Company shape, so it shares the
+    // same runtime structure as the create form.
+    if (!isCreateCompanyInput(input)) {
+        return {
+            status: 'error',
+            message: 'Invalid company form data.'
+        };
+    }
+
+    const result = await service.update(id, input);
+
+    if (!result.success) {
+        if (result.error.type === 'validation') {
+            return {
+                status: 'error',
+                message: 'Check the company details.'
+            };
+        }
+
+        if (result.error.type === 'not-found') {
+            return {
+                status: 'error',
+                message: 'The company no longer exists.'
+            };
+        }
+
+        return {
+            status: 'error',
+            message: 'Could not update the company.'
+        };
+    }
+
+    revalidatePath('/companies');
+    revalidatePath(`/companies/${id}`);
+
+    redirect(`/companies/${id}`);
 }

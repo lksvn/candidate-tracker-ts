@@ -24,6 +24,7 @@ export default async function CompaniesPage() {
         <main>
             <h1>Companies</h1>
             <CompanyForm />
+            <hr />
             {result.data.length === 0 ? (
                 <p>No companies registered yet.</p>
             ) : (
