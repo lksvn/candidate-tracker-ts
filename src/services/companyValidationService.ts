@@ -16,8 +16,12 @@ function isHttpUrl(value: string): boolean {
 
     try {
         const url = new URL(value);
+        const hostnameParts = url.hostname.split('.');
 
-        return Boolean(url.hostname);
+        return (
+            hostnameParts.length >= 2 &&
+            hostnameParts.every((part) => part.length > 0)
+        );
     } catch {
         return false;
     }

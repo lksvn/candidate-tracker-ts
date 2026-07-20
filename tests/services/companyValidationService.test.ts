@@ -148,6 +148,20 @@ describe('validateCreateCompanyInput', () => {
             }
         ]);
     });
+
+    it('returns an issue when the company website is not a valid domain', () => {
+        const company: CreateCompanyInput = {
+            name: 'Company Test',
+            website: 'http://invalidcom'
+        };
+        
+        expect(validateCreateCompanyInput(company)).toEqual([
+            {
+                field: 'website',
+                reason: 'invalid-url'
+            }
+        ]);
+    });
 });
 
 describe('validateUpdateCompanyInput', () => {
@@ -261,5 +275,18 @@ describe('validateUpdateCompanyInput', () => {
         };
         
         expect(validateUpdateCompanyInput(company)).toEqual([]);
+    });
+
+    it('returns an issue when the company website is not a valid domain', () => {
+        const company: UpdateCompanyInput = {
+            website: 'http://invalidcom'
+        };
+        
+        expect(validateUpdateCompanyInput(company)).toEqual([
+            {
+                field: 'website',
+                reason: 'invalid-url'
+            }
+        ]);
     });
 });
