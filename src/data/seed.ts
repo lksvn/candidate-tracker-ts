@@ -76,7 +76,7 @@ export const jobs: JobOpportunity[] = [
         title: 'UX Designer',
         companyId: '3',
         description: 'Create wireframes and prototypes for web applications.',
-        model: 'on-site',
+        model: 'onSite',
         status: 'interviewing'
     },
     {

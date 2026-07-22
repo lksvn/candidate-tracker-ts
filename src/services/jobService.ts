@@ -1,9 +1,5 @@
-import { JobOpportunity, JobModel, JobStatus } from '../domain/jobOpportunity';
+import { JobOpportunity, JobModel, JobStatus, CreateJobOpportunityInput, UpdateJobOpportunityInput } from '../domain/jobOpportunity';
 import { filterByProperty } from '../shared/collectionUtils';
-
-// Defines the input types with restrictions using Omit and Partial
-type CreateJobOpportunityInput = Omit<JobOpportunity, 'id'>; // use the JobOpportunity interface and omit the 'id' property for creation input
-type UpdateJobOpportunityInput = Partial<Omit<JobOpportunity, 'id' | 'companyId'>>; // may update any property except 'id' and 'companyId', every other field is optional
 
 export function getSavedJobs(jobs: JobOpportunity[]): JobOpportunity[] {
     return jobs.filter((job) => job.status === 'saved');

@@ -22,6 +22,7 @@ export default async function CompaniesPage() {
 
     return (
         <main>
+            <Link href="/">{'<'} Home</Link>
             <h1>Companies</h1>
             <CompanyForm />
             <hr />

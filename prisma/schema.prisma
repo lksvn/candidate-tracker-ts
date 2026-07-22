@@ -13,9 +13,40 @@ datasource db {
 }
 
 model Company {
-  id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name    String
-  website String?
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String
+  website          String?
+  jobOpportunities JobOpportunity[]
 
   @@map("companies")
+}
+
+enum JobModel {
+  hybrid
+  remote
+  onSite @map("on-site")
+
+  @@map("job_model")
+}
+
+enum JobStatus {
+  saved
+  applied
+  interviewing
+  rejected
+
+  @@map("job_status")
+}
+
+model JobOpportunity {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  companyId   String    @map("company_id") @db.Uuid
+  description String?
+  model       JobModel
+  status      JobStatus
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  @@index([companyId])
+  @@map("job_opportunities")
 }
