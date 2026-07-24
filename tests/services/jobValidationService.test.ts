@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { validateJobOpportunities } from "../../src/services/jobValidationService";
-import { Company } from "../../src/domain/company";
-import { JobOpportunity } from "../../src/domain/jobOpportunity";
+import { validateCreateJobOpportunityInput, validateJobOpportunities } from "../../src/services/jobValidationService";
+import type { Company } from "../../src/domain/company";
+import type { JobOpportunity } from "../../src/domain/jobOpportunity";
 
 describe('validateJobOpportunity', () => {
     const companies: Company[] = [{
@@ -49,5 +49,58 @@ describe('validateJobOpportunity', () => {
         }];
 
         expect(validateJobOpportunities(opportunity, companies)).toEqual([]);        
+    });
+});
+
+describe('validateCreateJobOpportunityInput', () => {
+    const validInput = {
+        title: 'Developer',
+        companyId: 'company-id',
+        description: 'testing creation',
+        model: 'remote',
+        status: 'saved',
+    } as const;
+
+    it('returns no issues when the input is valid', () => {
+        expect(validateCreateJobOpportunityInput(validInput)).toEqual([]);
+    });
+
+    it('returns an issue when the input title is missing or empty', () => {
+        expect(validateCreateJobOpportunityInput({
+            ...validInput,
+            title: ''
+        })).toEqual([ { field: 'title', reason: 'blank-title' } ]);
+    });
+
+    it('returns an issue when the input title is space only', () => {
+        expect(validateCreateJobOpportunityInput({
+            ...validInput,
+            title: '    '
+        })).toEqual([ { field: 'title', reason: 'blank-title' } ]);
+    });
+
+    it('returns an issue when the input companyId is missing or empty', () => {
+        expect(validateCreateJobOpportunityInput({
+            ...validInput,
+            companyId: ''
+        })).toEqual([ { field: 'companyId', reason: 'blank-company-id' } ]);
+    });
+
+    it('returns an issue when the input companyId is space only', () => {
+        expect(validateCreateJobOpportunityInput({
+            ...validInput,
+            companyId: '    '
+        })).toEqual([ { field: 'companyId', reason: 'blank-company-id' } ]);
+    });
+
+    it('returns an issue when the input companyId and title are missing or empty', () => {
+        expect(validateCreateJobOpportunityInput({
+            ...validInput,
+            title: '',
+            companyId: '    '
+        })).toEqual([
+            { field: 'title', reason: 'blank-title' },
+            { field: 'companyId', reason: 'blank-company-id' }
+        ]);
     });
 });

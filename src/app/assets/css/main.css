@@ -1,0 +1,52 @@
+@import './reset.css';
+:root {
+    --color:#e9efec;
+    --hover: #a0a08b;
+    --shadow: #e9efec;
+    --border: #555568;
+    --background: #211e20
+}
+body {
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    padding: 0 1rem;
+    margin: 0 auto;
+    line-height: 1.25;
+    background-color: var(--background);
+    color: var(--color);
+}
+strong,b { font-weight: 700; }
+em,i { font-style: italic }
+small { font-size: 75% }
+p { margin-bottom: .625rem }
+h1 { font-size: 2.25rem }
+h2 { font-size: 1.875rem }
+h3 { font-size: 1.5rem }
+h4 { font-size: 1.25rem }
+h5 { font-size: 1.125rem }
+h6 { font-size: 1rem }
+ul {
+    list-style: inside none;
+    margin-bottom: 1.25rem
+}
+li { margin-bottom: .313rem }
+li::marker {
+    white-space: pre;
+    content: "— "
+}
+label {
+    display: block;
+    padding: 0;
+    margin: 0;
+    font-weight: 700;
+}
+input, textarea, select {
+    width: 100%;
+    margin: 0;
+    background-color: var(--border)
+}
+
+a { color: var(--color); font-weight: 600; }
+.form-group { margin-bottom: 8px; }

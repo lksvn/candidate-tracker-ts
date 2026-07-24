@@ -16,7 +16,7 @@ export function CompanyForm() {
 
     return (
         <form action={formAction}>
-            <div>
+            <div className="form-group">
                 <label htmlFor="name">Name</label>
                 <input
                     id="name"
@@ -26,7 +26,7 @@ export function CompanyForm() {
                 />
             </div>
 
-            <div>
+            <div className="form-group">
                 <label htmlFor="website">Website</label>
                 <input
                     id="website"

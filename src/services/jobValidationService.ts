@@ -1,9 +1,14 @@
-import { JobOpportunity } from '../domain/jobOpportunity';
-import { Company } from '../domain/company';
+import type { CreateJobOpportunityInput, JobOpportunity } from '../domain/jobOpportunity';
+import type { Company } from '../domain/company';
 
 type JobOpportunityValidationIssue = {
     jobOpportunityId: string;
     reason: 'missing-title' | 'company-not-found';
+};
+
+export type CreateJobOpportunityValidationIssue = {
+    field: 'title' | 'companyId';
+    reason: 'blank-title' | 'blank-company-id';
 };
 
 export function validateJobOpportunities(jobOpportunities: JobOpportunity[], companies: Company[]): JobOpportunityValidationIssue[] {
@@ -22,6 +27,20 @@ export function validateJobOpportunities(jobOpportunities: JobOpportunity[], com
             issues.push({ jobOpportunityId: job.id, reason: 'missing-title' });
             continue;
         }
+    }
+
+    return issues;
+}
+
+export function validateCreateJobOpportunityInput(input: CreateJobOpportunityInput): CreateJobOpportunityValidationIssue[] {
+    const issues: CreateJobOpportunityValidationIssue[] = [];
+
+    if (input.title.trim() === '') {
+        issues.push({ field: 'title', reason: 'blank-title' });
+    }
+
+    if (input.companyId.trim() === '') {
+        issues.push({ field: 'companyId', reason: 'blank-company-id' });
     }
 
     return issues;

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import './assets/css/main.css';
 
 export const metadata: Metadata = {
     title: 'Candidate Tracker',

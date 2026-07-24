@@ -18,6 +18,7 @@ The goal is to practice TypeScript, domain modeling, service boundaries, validat
 ```txt
 src/
 +-- app/
++   +-- assets/
 +   +-- companies/
 +   +-- opportunities/
 +-- data/
@@ -89,7 +90,7 @@ Contains storage-independent repository contracts required by the application.
 
 ### `app/`
 
-Contains the Next.js App Router pages, forms, and Server Actions. Current browser-visible workflows include Company creation, listing, detail, and editing, plus a PostgreSQL-backed Job Opportunity list.
+Contains the Next.js App Router pages, forms, Server Actions, and global styles. Current browser-visible workflows include Company creation, listing, detail, and editing, plus PostgreSQL-backed Job Opportunity listing and creation.
 
 ### `data/validation/`
 
@@ -141,6 +142,10 @@ It is intentionally not production-clean yet.
 - Mapping database `null` values into domain-level optional values.
 - PostgreSQL integration tests with isolated test data cleanup.
 - Server Components and dynamic database-backed routes.
+- Server Actions with `FormData` runtime guards and browser-safe failure messages.
+- Separation between runtime shape validation, business validation, and asynchronous relationship lookup.
+- Application-service orchestration across Company and Job Opportunity repositories.
+- `useActionState` for pending and result feedback in client forms.
 - React's default text escaping for untrusted content.
 - `Promise.all` for independent async data loading.
 - Staged async loading when later data depends on earlier data.
@@ -260,20 +265,20 @@ Prisma Studio requires the PostgreSQL container to be running and uses `DATABASE
 
 ## Next Step
 
-Add the Job Opportunity creation workflow to the completed relational list slice.
+Add Job Opportunity detail and edit workflows to the completed list-and-create slice.
 
 Recommended targets:
 
-- load persisted Companies as form options
-- validate `FormData` as untrusted input
-- create the opportunity through a Server Action and repository
-- return field-level or form-level failures without losing user input
-- revalidate the opportunity list after successful creation
+- add repository lookup and update operations only when the routes need them
+- add a dynamic `/opportunities/[id]` detail route
+- add route-specific missing-record handling
+- add an edit form and Server Action with runtime and business validation
+- revalidate the list and detail routes after successful updates
 - keep styling minimal and functional while product behavior is still growing
 
 ## Current Verification
 
 - TypeScript check passes.
-- Unit suite passes with 116 tests across 17 files.
+- Unit suite passes with 134 tests across 19 files.
 - PostgreSQL integration suite passes with 9 tests across 2 files.
 - Next.js production build passes, including the dynamic `/opportunities` route.
