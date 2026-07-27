@@ -16,7 +16,8 @@ export function getJobsByStatus(jobs: JobOpportunity[], status: JobStatus): JobO
 export function createJobOpportunity(id: string, input: CreateJobOpportunityInput): JobOpportunity {
     return {
         id,
-        ...input
+        ...input,
+        description: input.description ?? null
     };
 }
 

@@ -1,10 +1,11 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { prisma } from '../../data/database/prismaClient';
 import { PrismaCompanyRepository } from '../../data/repositories/prismaCompanyRepository';
 import { PrismaJobOpportunityRepository } from '../../data/repositories/prismaJobOpportunityRepository';
-import { isCreateJobOpportunityInput } from '../../data/validation/jobOpportunityShapeValidator';
+import { isCreateJobOpportunityInput, isUpdateJobOpportunityInput } from '../../data/validation/jobOpportunityShapeValidator';
 import { JobOpportunityApplicationService } from '../../services/jobOpportunityApplicationService';
 
 export type JobOpportunityActionState = {
@@ -25,7 +26,7 @@ export async function createJobOpportunityAction(
     const input: unknown = {
         title: formData.get('title'),
         companyId: formData.get('companyId'),
-        description: description === '' ? undefined : description,
+        description: description === '' ? null : description,
         model: formData.get('model'),
         status: formData.get('status')
     };
@@ -66,4 +67,54 @@ export async function createJobOpportunityAction(
         status: 'success',
         message: 'Job opportunity created.'
     };
+}
+
+export async function updateJobOpportunityAction(
+    id: string,
+    _previousState: JobOpportunityActionState,
+    formData: FormData
+): Promise<JobOpportunityActionState> {
+    const description = formData.get('description');
+
+    const input: unknown = {
+        title: formData.get('title'),
+        description: description === '' ? null : description,
+        model: formData.get('model'),
+        status: formData.get('status')
+    };
+
+    if (!isUpdateJobOpportunityInput(input)) {
+        return {
+            status: 'error',
+            message: 'Invalid job opportunity form data.'
+        };
+    }
+
+    const result = await service.update(id, input);
+
+    if (!result.success) {
+        if (result.error.type === 'validation') {
+            return {
+                status: 'error',
+                message: 'Check the job opportunity details.'
+            };
+        }
+
+        if (result.error.type === 'not-found') {
+            return {
+                status: 'error',
+                message: 'The job opportunity no longer exists.'
+            };
+        }
+
+        return {
+            status: 'error',
+            message: 'Could not update the job opportunity.'
+        };
+    }
+
+    revalidatePath('/opportunities');
+    revalidatePath(`/opportunities/${id}`);
+
+    redirect(`/opportunities/${id}`);
 }

@@ -45,7 +45,7 @@ describe('PrismaJobOpportunityRepository', () => {
         const result = await repository.create({
             title: 'Senior Web Developer',
             companyId,
-            description: undefined,
+            description: null,
             model: 'remote',
             status: 'saved'
         });
@@ -61,7 +61,7 @@ describe('PrismaJobOpportunityRepository', () => {
             id: expect.any(String),
             title: 'Senior Web Developer',
             companyId,
-            description: undefined,
+            description: null,
             model: 'remote',
             status: 'saved'
         });
@@ -115,6 +115,159 @@ describe('PrismaJobOpportunityRepository', () => {
                 id: companyId,
                 name: 'Integration Test Company 1'
             }
+        });
+    });
+
+    it('finds an opportunity by ID', async () => {
+        if (!companyId) {
+            throw new Error('Integration test company was not created');
+        }
+
+        const opportunity = await prisma.jobOpportunity.create({
+            data: {
+                title: 'Joined Opportunity',
+                description: 'Tests the joined read model.',
+                model: 'hybrid',
+                status: 'applied',
+                company: {
+                    connect: { id: companyId }
+                }
+            }
+        });
+
+        opportunityIdsToDelete.push(opportunity.id);
+
+        const result = await repository.findById(opportunity.id);
+        if (!result.success) {
+            throw new Error(`Expected opportunity query to succeed: ${result.error.message}`);
+        }
+
+        expect(result.data).toEqual({
+            id: opportunity.id,
+            title: 'Joined Opportunity',
+            companyId,
+            description: 'Tests the joined read model.',
+            model: 'hybrid',
+            status: 'applied',
+            company: {
+                id: companyId,
+                name: 'Integration Test Company 1'
+            }
+        });
+    });
+
+    it('returns undefined when the opportunity does not exist', async () => {
+        if (!companyId) {
+            throw new Error('Integration test company was not created');
+        }
+        const missingId = randomUUID();
+
+        const result = await repository.findById(missingId);
+
+        expect(result).toEqual({
+            success: true,
+            data: undefined
+        });
+    });
+
+    it('updates selected fields and preserves omitted fields', async () => {
+        if (!companyId) {
+            throw new Error('Integration test company was not created');
+        }
+
+        const opportunity = await prisma.jobOpportunity.create({
+            data: {
+                title: 'Original Opportunity',
+                description: 'Keep this description.',
+                model: 'onSite',
+                status: 'saved',
+                company: {
+                    connect: { id: companyId }
+                }
+            }
+        });
+
+        opportunityIdsToDelete.push(opportunity.id);
+
+        const result = await repository.update(opportunity.id, {
+            title: 'Updated Opportunity',
+            status: 'applied'
+        });
+
+        expect(result).toEqual({
+            success: true,
+            data: {
+                id: opportunity.id,
+                title: 'Updated Opportunity',
+                companyId,
+                description: 'Keep this description.',
+                model: 'onSite',
+                status: 'applied'
+            }
+        });
+
+        const persistedOpportunity = await prisma.jobOpportunity.findUnique({
+            where: { id: opportunity.id }
+        });
+
+        expect(persistedOpportunity).toMatchObject({
+            title: 'Updated Opportunity',
+            description: 'Keep this description.',
+            model: 'onSite',
+            status: 'applied'
+        });
+    });
+
+    it('clears an opportunity description', async () => {
+        if (!companyId) {
+            throw new Error('Integration test company was not created');
+        }
+
+        const opportunity = await prisma.jobOpportunity.create({
+            data: {
+                title: 'Opportunity With Description',
+                description: 'Remove this description.',
+                model: 'remote',
+                status: 'saved',
+                company: {
+                    connect: { id: companyId }
+                }
+            }
+        });
+
+        opportunityIdsToDelete.push(opportunity.id);
+
+        const result = await repository.update(opportunity.id, {
+            description: null
+        });
+
+        expect(result).toEqual({
+            success: true,
+            data: {
+                id: opportunity.id,
+                title: 'Opportunity With Description',
+                companyId,
+                description: null,
+                model: 'remote',
+                status: 'saved'
+            }
+        });
+
+        const persistedOpportunity = await prisma.jobOpportunity.findUnique({
+            where: { id: opportunity.id }
+        });
+
+        expect(persistedOpportunity?.description).toBeNull();
+    });
+
+    it('returns undefined when updating a nonexistent opportunity', async () => {
+        const result = await repository.update(randomUUID(), {
+            status: 'rejected'
+        });
+
+        expect(result).toEqual({
+            success: true,
+            data: undefined
         });
     });
 

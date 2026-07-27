@@ -8,6 +8,7 @@ describe('validateInterviews', () => {
         id: '2',
         title: 'Backend Engineer',
         companyId: '2',
+        description: null,
         model: 'hybrid',
         status: 'applied'
     },{

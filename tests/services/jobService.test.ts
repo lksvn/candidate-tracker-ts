@@ -3,16 +3,16 @@ import { createJobOpportunity, getJobsByModel, getJobsByStatus, getSavedJobs, up
 import { JobOpportunity } from "../../src/domain/jobOpportunity";
 
 const jobs: JobOpportunity[] = [
-    { id: '1', title: 'Frontend Developer', companyId: '1', model: 'remote', status: 'saved' },
-    { id: '2', title: 'Backend Engineer', companyId: '2', model: 'hybrid', status: 'applied' },
-    { id: '3', title: 'DevOps Specialist', companyId: '1', model: 'remote', status: 'interviewing' },
-    { id: '5', title: 'Data Analyst', companyId: '2', model: 'hybrid', status: 'rejected' }
+    { id: '1', title: 'Frontend Developer', companyId: '1', description: null, model: 'remote', status: 'saved' },
+    { id: '2', title: 'Backend Engineer', companyId: '2', description: null, model: 'hybrid', status: 'applied' },
+    { id: '3', title: 'DevOps Specialist', companyId: '1', description: null, model: 'remote', status: 'interviewing' },
+    { id: '5', title: 'Data Analyst', companyId: '2', description: null, model: 'hybrid', status: 'rejected' }
 ];
 
 describe("getSavedJobs", () => {
     it("returns only saved jobs", () => {
         expect(getSavedJobs(jobs)).toEqual([
-            { id: '1', title: 'Frontend Developer', companyId: '1', model: 'remote', status: 'saved' }
+            { id: '1', title: 'Frontend Developer', companyId: '1', description: null, model: 'remote', status: 'saved' }
         ]); 
     });
 });
@@ -20,8 +20,8 @@ describe("getSavedJobs", () => {
 describe("getJobsByModel", () => {
     it("returns jobs with the selected model", () => {
         expect(getJobsByModel(jobs, "hybrid")).toEqual([
-            { id: '2', title: 'Backend Engineer', companyId: '2', model: 'hybrid', status: 'applied' },
-            { id: '5', title: 'Data Analyst', companyId: '2', model: 'hybrid', status: 'rejected' }
+            { id: '2', title: 'Backend Engineer', companyId: '2', description: null, model: 'hybrid', status: 'applied' },
+            { id: '5', title: 'Data Analyst', companyId: '2', description: null, model: 'hybrid', status: 'rejected' }
         ]); 
     });
 });
@@ -29,7 +29,7 @@ describe("getJobsByModel", () => {
 describe("getJobsByStatus", () => {
     it("returns jobs with the selected status", () => {
         expect(getJobsByStatus(jobs, "applied")).toEqual([
-            { id: '2', title: 'Backend Engineer', companyId: '2', model: 'hybrid', status: 'applied' }
+            { id: '2', title: 'Backend Engineer', companyId: '2', description: null, model: 'hybrid', status: 'applied' }
         ]);         
     });
 });

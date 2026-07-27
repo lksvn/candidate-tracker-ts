@@ -58,9 +58,8 @@ export default async function JobOpportunitiesPage() {
                                 <li>Company: <Link href={`/companies/${opportunity.company.id}`}>{opportunity.company.name}</Link></li>
                                 <li>Model: {opportunity.model}</li>
                             </ul>
-                            {opportunity.description && (
-                                <p>{opportunity.description}</p>
-                            )}
+                            <Link href={`/opportunities/${opportunity.id}`}>View opportunity {'>'}</Link>
+                            <hr />
                         </div>
                     ))}
                 </>

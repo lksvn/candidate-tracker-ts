@@ -20,6 +20,7 @@ describe('validateJobOpportunity', () => {
             id: '1',
             title: 'Company does not exist',
             companyId: '333',
+            description: null,
             model: "hybrid",
             status: "applied"
         }];
@@ -32,6 +33,7 @@ describe('validateJobOpportunity', () => {
             id: '1',
             title: '',
             companyId: '2',
+            description: null,
             model: "hybrid",
             status: "applied"
         }];
@@ -44,6 +46,7 @@ describe('validateJobOpportunity', () => {
             id: '1',
             title: 'No issues found',
             companyId: '1',
+            description: null,
             model: "hybrid",
             status: "applied"
         }];

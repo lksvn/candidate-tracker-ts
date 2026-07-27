@@ -1,9 +1,9 @@
-import type { CreateJobOpportunityInput, JobOpportunity } from "../domain/jobOpportunity";
+import type { CreateJobOpportunityInput, JobOpportunity, UpdateJobOpportunityInput } from "../domain/jobOpportunity";
 import type { CompanyRepository } from "../repositories/companyRepository";
 import type { JobOpportunityRepository } from "../repositories/jobOpportunityRepository";
 import type { RepositoryError } from "../repositories/repositoryError";
-import { failureResult, type Result } from "../shared/result";
-import { validateCreateJobOpportunityInput, type CreateJobOpportunityValidationIssue } from "./jobValidationService";
+import { failureResult, successResult, type Result } from "../shared/result";
+import { validateCreateJobOpportunityInput, validateUpdateJobOpportunityInput, type CreateJobOpportunityValidationIssue, type UpdateJobOpportunityValidationIssue } from "./jobValidationService";
 
 export type CreateJobOpportunityError = {
       type: 'validation';
@@ -13,6 +13,15 @@ export type CreateJobOpportunityError = {
       entity: 'company';
       id: string;
     } | RepositoryError;
+
+export type UpdateJobOpportunityError = {
+    type: 'validation';
+    issues: UpdateJobOpportunityValidationIssue[];
+} | {
+    type: 'not-found';
+    entity: 'job-opportunity';
+    id: string;
+} | RepositoryError;
 
 export class JobOpportunityApplicationService {
     constructor(
@@ -27,7 +36,7 @@ export class JobOpportunityApplicationService {
             ...input,
             title: input.title.trim(),
             companyId: input.companyId.trim(),
-            description: input.description?.trim() || undefined
+            description: input.description?.trim() || null
         };
 
         const issues = validateCreateJobOpportunityInput(normalizedInput);
@@ -54,5 +63,48 @@ export class JobOpportunityApplicationService {
         }
 
         return this.jobRepository.create(normalizedInput);
+    }
+
+    async update(
+        id: string,
+        input: UpdateJobOpportunityInput
+    ): Promise<Result<JobOpportunity, UpdateJobOpportunityError>> {
+        const normalizedInput: UpdateJobOpportunityInput = {
+            ...input,
+            title: typeof input.title === 'string'
+                ? input.title.trim()
+                : input.title,
+            description: typeof input.description === 'string'
+                ? input.description.trim() || null
+                : input.description
+        };
+
+        const issues = validateUpdateJobOpportunityInput(normalizedInput);
+
+        if (issues.length > 0) {
+            return failureResult({
+                type: 'validation',
+                issues
+            });
+        }
+
+        const result = await this.jobRepository.update(
+            id,
+            normalizedInput
+        );
+
+        if (!result.success) {
+            return result;
+        }
+
+        if (result.data === undefined) {
+            return failureResult({
+                type: 'not-found',
+                entity: 'job-opportunity',
+                id
+            });
+        }
+
+        return successResult(result.data);
     }
 }

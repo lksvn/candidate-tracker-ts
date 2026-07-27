@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { isCreateJobOpportunityInput } from "../../../src/data/validation/jobOpportunityShapeValidator";
+import {
+    isCreateJobOpportunityInput,
+    isUpdateJobOpportunityInput
+} from "../../../src/data/validation/jobOpportunityShapeValidator";
 
 const validInput = {
     title: 'Developer',
@@ -70,4 +73,58 @@ describe('isCreateJobOpportunityInput', () => {
         })).toBe(false);
     });
 
+});
+
+describe('isUpdateJobOpportunityInput', () => {
+    const validUpdateInput = {
+        title: 'Senior Developer',
+        description: 'Updated description',
+        model: 'hybrid',
+        status: 'applied'
+    } as const;
+
+    it('accepts the complete editable opportunity shape', () => {
+        expect(isUpdateJobOpportunityInput(validUpdateInput)).toBe(true);
+    });
+
+    it('accepts null as a cleared description', () => {
+        expect(isUpdateJobOpportunityInput({
+            ...validUpdateInput,
+            description: null
+        })).toBe(true);
+    });
+
+    it('rejects a missing description from the complete edit form', () => {
+        const {
+            description: _description,
+            ...inputWithoutDescription
+        } = validUpdateInput;
+
+        expect(isUpdateJobOpportunityInput(inputWithoutDescription)).toBe(false);
+    });
+
+    it('rejects invalid editable field types', () => {
+        expect(isUpdateJobOpportunityInput({
+            ...validUpdateInput,
+            title: 123
+        })).toBe(false);
+        expect(isUpdateJobOpportunityInput({
+            ...validUpdateInput,
+            description: 123
+        })).toBe(false);
+        expect(isUpdateJobOpportunityInput({
+            ...validUpdateInput,
+            model: 'freelance'
+        })).toBe(false);
+        expect(isUpdateJobOpportunityInput({
+            ...validUpdateInput,
+            status: 'interviewed'
+        })).toBe(false);
+    });
+
+    it('rejects null, arrays, and primitive values', () => {
+        expect(isUpdateJobOpportunityInput(null)).toBe(false);
+        expect(isUpdateJobOpportunityInput([])).toBe(false);
+        expect(isUpdateJobOpportunityInput('opportunity')).toBe(false);
+    });
 });

@@ -1,4 +1,4 @@
-import type { CreateJobOpportunityInput, JobOpportunity } from '../domain/jobOpportunity';
+import type { CreateJobOpportunityInput, JobOpportunity, UpdateJobOpportunityInput } from '../domain/jobOpportunity';
 import type { Company } from '../domain/company';
 
 type JobOpportunityValidationIssue = {
@@ -9,6 +9,11 @@ type JobOpportunityValidationIssue = {
 export type CreateJobOpportunityValidationIssue = {
     field: 'title' | 'companyId';
     reason: 'blank-title' | 'blank-company-id';
+};
+
+export type UpdateJobOpportunityValidationIssue = {
+    field: 'title';
+    reason: 'blank-title';
 };
 
 export function validateJobOpportunities(jobOpportunities: JobOpportunity[], companies: Company[]): JobOpportunityValidationIssue[] {
@@ -41,6 +46,19 @@ export function validateCreateJobOpportunityInput(input: CreateJobOpportunityInp
 
     if (input.companyId.trim() === '') {
         issues.push({ field: 'companyId', reason: 'blank-company-id' });
+    }
+
+    return issues;
+}
+
+export function validateUpdateJobOpportunityInput(input: UpdateJobOpportunityInput): UpdateJobOpportunityValidationIssue[] {
+    const issues: UpdateJobOpportunityValidationIssue[] = [];
+
+    if (input.title !== undefined && input.title.trim() === '') {
+        issues.push({
+            field: 'title',
+            reason: 'blank-title'
+        });
     }
 
     return issues;

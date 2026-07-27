@@ -80,17 +80,17 @@ Repository operations return explicit success or failure values:
 Promise<Result<T, RepositoryError>>
 ```
 
-`CompanyRepository` has in-memory and Prisma/PostgreSQL implementations. `JobOpportunityRepository` currently has a Prisma/PostgreSQL adapter for creation and joined list reads.
+`CompanyRepository` has in-memory and Prisma/PostgreSQL implementations. `JobOpportunityRepository` has a Prisma/PostgreSQL adapter for creation, joined reads, lookup, and partial updates.
 
 ### `repositories/`
 
 Contains storage-independent repository contracts required by the application.
 
-`CompanyRepository` supports listing, lookup, creation, and partial updates with consistent missing-record and nullable-field behavior. `JobOpportunityRepository` is intentionally narrower: it currently supports creation and listing opportunities with the related Company's ID and name.
+`CompanyRepository` supports listing, lookup, creation, and partial updates with consistent missing-record and nullable-field behavior. `JobOpportunityRepository` supports creation, joined listing and lookup, and partial updates while keeping Company reassignment outside the current edit workflow.
 
 ### `app/`
 
-Contains the Next.js App Router pages, forms, Server Actions, and global styles. Current browser-visible workflows include Company creation, listing, detail, and editing, plus PostgreSQL-backed Job Opportunity listing and creation.
+Contains the Next.js App Router pages, forms, Server Actions, and global styles. Current browser-visible workflows include creation, listing, detail, missing-record handling, and editing for both Companies and PostgreSQL-backed Job Opportunities.
 
 ### `data/validation/`
 
@@ -139,10 +139,11 @@ It is intentionally not production-clean yet.
 - Prisma/PostgreSQL enums and one-to-many relations.
 - Foreign-key deletion rules and indexes on referencing columns.
 - Prisma relation projections with `select` and `GetPayload`.
-- Mapping database `null` values into domain-level optional values.
+- Consistent `null` semantics for nullable persisted fields, with omitted update properties preserving existing values.
 - PostgreSQL integration tests with isolated test data cleanup.
 - Server Components and dynamic database-backed routes.
 - Server Actions with `FormData` runtime guards and browser-safe failure messages.
+- Sanitized rendering for limited rich-text Job Opportunity descriptions.
 - Separation between runtime shape validation, business validation, and asynchronous relationship lookup.
 - Application-service orchestration across Company and Job Opportunity repositories.
 - `useActionState` for pending and result feedback in client forms.
@@ -265,20 +266,18 @@ Prisma Studio requires the PostgreSQL container to be running and uses `DATABASE
 
 ## Next Step
 
-Add Job Opportunity detail and edit workflows to the completed list-and-create slice.
+Review and commit the completed Job Opportunity vertical slice, then choose the next narrow user-visible workflow.
 
 Recommended targets:
 
-- add repository lookup and update operations only when the routes need them
-- add a dynamic `/opportunities/[id]` detail route
-- add route-specific missing-record handling
-- add an edit form and Server Action with runtime and business validation
-- revalidate the list and detail routes after successful updates
-- keep styling minimal and functional while product behavior is still growing
+- manually verify clearing a description and route-specific missing-record behavior
+- review the uncommitted slice as a whole before versioning it
+- choose the next workflow from Contacts, Interviews, Notes, or a small dashboard
+- continue favoring narrow vertical slices over expanding every domain at once
 
 ## Current Verification
 
 - TypeScript check passes.
-- Unit suite passes with 134 tests across 19 files.
-- PostgreSQL integration suite passes with 9 tests across 2 files.
-- Next.js production build passes, including the dynamic `/opportunities` route.
+- Unit suite passes with 142 tests across 19 files.
+- PostgreSQL integration suite passes with 14 tests across 2 files.
+- Next.js production build passes, including dynamic opportunity detail and edit routes.
